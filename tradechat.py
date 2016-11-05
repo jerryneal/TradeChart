@@ -152,7 +152,7 @@ def logout():
 # main routine
 
 if __name__ == '__main__':
-    # init_db() # comment out if data in currect
+    init_db() # comment out if data in currect
               # TC database if to be kept
 
     app.run()
