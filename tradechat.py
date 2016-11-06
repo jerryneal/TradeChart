@@ -148,6 +148,8 @@ def logout():
     logging.debug("Logging Out successful")
     return redirect(url_for('show_entries'))
 
+#Adding a comment
+
 if __name__ == '__main__':
     # init_db() # comment out if data in currect
               # TC database if to be kept
