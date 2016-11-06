@@ -52,8 +52,8 @@ def init_db():
 @app.teardown_appcontext
 def close_db(error):
     # Closes the TC database at the end of the request
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
+    # if hasattr(g, 'sqlite_db'):
+    #     g.sqlite_db.close()
     pass
 
 @app.route('/')
@@ -151,7 +151,7 @@ def logout():
 #Adding a comment
 
 if __name__ == '__main__':
-    # init_db() # comment out if data in currect
+    init_db() # comment out if data in currect
               # TC database if to be kept
 
     app.run()
