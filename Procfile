@@ -1,1 +1,1 @@
-web: gunicorn tradechat:app --log-file
+web: gunicorn tradechat:app --log-file="logs.txt"
