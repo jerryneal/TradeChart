@@ -29,10 +29,12 @@ class ParseConfig(object):
         self.int_database_pass = parser.get('localdatabaseConnection','MYSQL_DATABASE_PASSWORD')
 
         #External database connections
-        self.ext_database_user = ('extDBConnection','MYSQL_DATABASE_USER')
-        self.ext_database_pass = ('extDBConnection', 'MYSQL_DATABASE_PASSWORD')
-        self.ext_database_db = ('extDBConnection','MYSQL_DATABASE_DB')
-        self.ext_database_host = ('extDBConnection','MYSQL_DATABASE_HOST')
+        self.ext_database_user = parser.get('extDBConnection','MYSQL_DATABASE_USER')
+        self.ext_database_pass = parser.get('extDBConnection', 'MYSQL_DATABASE_PASSWORD')
+        self.ext_database_db = parser.get('extDBConnection','MYSQL_DATABASE_DB')
+        self.ext_database_host = parser.get('extDBConnection','MYSQL_DATABASE_HOST')
+        self.ext_database_port = parser.get('extDBConnection','MYSQL_DATABASE_PORT')
+        self.ext_database_type = parser.get('extDBConnection','MYSQL_DATABASE_TYPE')
 
         # In outbound Connections
         self.chapUserName = parser.get('inOutBoundConnections','chapUserName')

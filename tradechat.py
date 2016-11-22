@@ -4,11 +4,12 @@ import MySQLdb
 from flask import Flask, request, session, g, redirect, url_for, abort,render_template, flash
 import functions
 from flask.ext.mysql import MySQL
+import subprocess
 
 #Configuration Parser Information
 cf = functions.configParser.ParseConfig()
 
-session.permanent = False
+# session.permanent = True
 
 #the application object from the main Flask class
 app = Flask(__name__)
@@ -17,10 +18,10 @@ mysql = MySQL()
 
 #Configurations for hosted environment
 app.config.update(dict(
-    MYSQL_DATABASE_DB = 'malibudb', #cf.int_database_db,
-    MYSQL_DATABASE_USER = 'malibu', #cf.int_database_user,
-    MYSQL_DATABASE_PASSWORD = 'testdbtestdb', #cf.int_database_pass,
-    MYSQL_DATABASE_HOST = 'localhost', #cf.int_database_host
+    MYSQL_DATABASE_DB = cf.ext_database_db,
+    MYSQL_DATABASE_USER = cf.ext_database_user,
+    MYSQL_DATABASE_PASSWORD = cf.ext_database_pass,
+    MYSQL_DATABASE_HOST = cf.ext_database_host,
     SECRET_KEY = cf.secretKey,
     DEBUG = cf.loglevel
 
@@ -39,7 +40,12 @@ def connect_db():
 
 def get_db():
     # Opens a new connection to the MYSQL database
-    conn = MySQLdb.connect(db='test', user='root', passwd='', host='localhost')
+    # print cf.ext_database_port
+    conn = MySQLdb.connect(host=cf.ext_database_host,user=cf.ext_database_user,passwd=cf.ext_database_pass,
+                           db=cf.ext_database_db,port=int(cf.ext_database_port))
+    # cmd = 'ssh -L 3333:malibu.mysql.pythonanywhere-services.com:3306 malibu@ssh.pythonanywhere.com'
+    # conn =
+    # conn = MySQLdb.connect(db='test', user='root', passwd='', host='localhost')
     cursor = conn.cursor()
     return conn
 
