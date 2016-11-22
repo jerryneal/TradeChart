@@ -8,7 +8,7 @@ from flask.ext.mysql import MySQL
 #Configuration Parser Information
 cf = functions.configParser.ParseConfig()
 
-# session.permanent = True
+session.permanent = False
 
 #the application object from the main Flask class
 app = Flask(__name__)
