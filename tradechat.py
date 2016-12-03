@@ -1,8 +1,9 @@
 import os,logging
 import datetime as dt
-from sqlite3 import dbapi2 as sqlite3
+import MySQLdb
 from flask import Flask, request, session, g, redirect, url_for, abort,render_template, flash
 import functions
+from flask.ext.mysql import MySQL
 
 #Configuration Parser Information
 cf = functions.configParser.ParseConfig()
@@ -11,12 +12,18 @@ cf = functions.configParser.ParseConfig()
 
 #the application object from the main Flask class
 app = Flask(__name__)
+mysql = MySQL()
 
-#override config from environment variable
+
+#Configurations for hosted environment
 app.config.update(dict(
-    DATABASE = os.path.join(app.root_path, cf.database),
-    DEBUG = cf.dbDebug,
-    SECRET_KEY = cf.secretKey #secret key used here for real applications
+    MYSQL_DATABASE_DB = 'malibudb', #cf.int_database_db,
+    MYSQL_DATABASE_USER = 'malibu', #cf.int_database_user,
+    MYSQL_DATABASE_PASSWORD = 'testdbtestdb', #cf.int_database_pass,
+    MYSQL_DATABASE_HOST = 'localhost', #cf.int_database_host
+    SECRET_KEY = cf.secretKey,
+    DEBUG = cf.loglevel
+
 ))
 
 app.config.from_envvar('TC_SETTINGS',silent=True)
@@ -26,44 +33,50 @@ logging.basicConfig(format='%(asctime)s.%(msecs).03d - %(levelname)s - %(module)
 
 
 def connect_db():
-    #Connects to the database
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row  #TODO: What does this mean
-    logging.debug('Database Connection Successful')
-    return rv
+    pass
+
 
 
 def get_db():
-    # Opens a new connection to the TC database
-    if not hasattr(g, 'sqlite_db'):
-        # open only if none exists yet
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
+    # Opens a new connection to the MYSQL database
+    conn = MySQLdb.connect(db='test', user='root', passwd='', host='localhost')
+    cursor = conn.cursor()
+    return conn
+
 
 def init_db():
-    # Creates the TC databse tables
+    # Creates the TC database tables
     with app.app_context():
         db = get_db()
-        with app.open_resource('tables.sql', mode='rb') as f:
-            db.cursor().executescript(f.read())
+        cursor = db.cursor()
+
+        try:
+            #Creates tables within the tables
+            with app.open_resource('tables.sql', mode='rb') as f:
+                cursor.execute(f.read().replace("\r\n",""))
             # creates entries and user tables
+        except:
+            pass
+        #Run the stored proc
+        cursor.callproc('create_database_tables')
     db.commit()
 
 @app.teardown_appcontext
 def close_db(error):
-    # Closes the TC database at the end of the request
-    # if hasattr(g, 'sqlite_db'):
-    #     g.sqlite_db.close()
+    # db = get_db()
+    # db.close()
     pass
 
 @app.route('/')
 def show_entries():
     # Render all entries of the TC database
     db = get_db()
-    query = "select comment,user,time from comments order by id desc"
-    cursor = db.execute(query)
+    cursor = db.cursor(MySQLdb.cursors.DictCursor) # Error had something to with the Rowfactory
+    cursor.execute("SELECT comment,user,time from comments order by id desc")
     comments = cursor.fetchall()
+    logging.debug(comments)
     logging.debug("Entries should showed successfully")
+    db.close()
     return render_template('show_entries.html', comments=comments)
 
 
@@ -78,7 +91,8 @@ def register():
             # At this stage both fields have to be noneempty
 
         else:
-            db.execute('insert into users (name, password) values (?,?)', [request.form['username'],request.form['password']])
+            cursor = db.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('insert into users (name, password) values (%s,%s)', [request.form['username'],request.form['password']])
             db.commit()
             logging.debug('Names registered into database')
 
@@ -98,20 +112,14 @@ def add_entry():
     db = get_db()
     now = dt.datetime.now()
     try:
-        db.execute('insert into comments (comment, user, time) values (?,?,?)',
+        cursor = db.cursor()
+        cursor.execute('insert into comments (comment, user, time) values (%s,%s,%s)',
                    [request.form['text'],app.config['USERNAME'],str(now)[:-7]])
     except Exception as e:
         logging.debug(e)
         flash('Item not added, please login and try again')
         session.pop('logged_in', None)
-    # logging.DEBUG(app.config['USERNAME'])
     db.commit()
-
-    # Send Message to Phone - To be included in Trigger
-    # cm = functions.messaging.SendMessage()
-    # cm.sendSMSMessage('FROM: %s'.join(app.config['USERNAME']))
-
-    # cm.sendSMSMessage()
 
     # Success Notifications
     flash('Your comment was successfully added.')
@@ -126,8 +134,9 @@ def login():
     if request.method == 'POST':
         db = get_db()
         try:
-            query = 'select id from users where name = ? and password = ?'
-            id = db.execute(query, (request.form['username'],
+            query = 'SELECT id from users where name = %s and password = %s'
+            cursor = db.cursor(MySQLdb.cursors.DictCursor)
+            id = cursor.execute(query, (request.form['username'],
                                     request.form['password'])).fetchone()[0]
             #fails if record with provided username and password is not found
             session['logged_in'] = True
@@ -151,7 +160,7 @@ def logout():
 #Adding a comment
 
 if __name__ == '__main__':
-    init_db() # comment out if data in currect
+    # init_db() # comment out if data in currect
               # TC database if to be kept
 
     app.run()

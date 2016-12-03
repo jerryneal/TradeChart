@@ -22,10 +22,17 @@ class ParseConfig(object):
         self.account_sid = parser.get('twilioMessaging','account_sid')
         self.token = parser.get('twilioMessaging','auth_token')
 
-        # Database connection
-        self.database = parser.get('databaseConnection','DATABASE')
-        self.dbDebug = parser.get('databaseConnection','DEBUG')
-        self.secretKey = parser.get('databaseConnection','SECRET_KEY')
+        # Local host Database connection
+        self.int_database_db = parser.get('localdatabaseConnection','MYSQL_DATABASE_DB')
+        self.int_database_user = parser.get('localdatabaseConnection','MYSQL_DATABASE_USER')
+        self.int_database_host = parser.get('localdatabaseConnection','MYSQL_DATABASE_HOST')
+        self.int_database_pass = parser.get('localdatabaseConnection','MYSQL_DATABASE_PASSWORD')
+
+        #External database connections
+        self.ext_database_user = ('extDBConnection','MYSQL_DATABASE_USER')
+        self.ext_database_pass = ('extDBConnection', 'MYSQL_DATABASE_PASSWORD')
+        self.ext_database_db = ('extDBConnection','MYSQL_DATABASE_DB')
+        self.ext_database_host = ('extDBConnection','MYSQL_DATABASE_HOST')
 
         # In outbound Connections
         self.chapUserName = parser.get('inOutBoundConnections','chapUserName')
@@ -37,3 +44,4 @@ class ParseConfig(object):
 
         # Global Options
         self.loglevel = parser.get('globalOptions','loggingLevel')
+        self.secretKey = parser.get('globalOptions','secret_key')

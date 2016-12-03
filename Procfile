@@ -1,1 +1,0 @@
-web: gunicorn tradechat:app --log-file

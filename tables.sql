@@ -1,15 +1,21 @@
--- noinspection SqlNoDataSourceInspectionForFile
-drop table if exists comments;
-create table comments (
-  id integer primary key autoincrement,
-  comment text not null,
-  user text not null,
-  time text not null
-);
+CREATE PROCEDURE `create_database_tables`()
+BEGIN
+	
+	DROP TABLE IF EXISTS users;
+	CREATE TABLE users (
+		id INT NOT NULL AUTO_INCREMENT,
+		name VARCHAR(100) NOT NULL,
+		password VARCHAR(100) NOT NULL,
+		PRIMARY KEY (id)
+	);
 
-drop table if exists users;
-create table users (
-  id integer primary key autoincrement,
-  name text not null,
-  password text not null
-);
+	DROP TABLE IF EXISTS comments;
+	CREATE TABLE comments (
+		id INT NOT NULL AUTO_INCREMENT,
+		comment VARCHAR(100) NOT NULL,
+		user VARCHAR(100) NOT NULL,
+		time VARCHAR(100) NOT NULL,
+		PRIMARY KEY (id)
+	);
+
+END
