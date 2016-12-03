@@ -1,78 +1,40 @@
-from flask import Flask
-from flaskext.mysql import MySQL
+# class Parent1(object):
+#     def __init__(self):
+#         self.var1 = 1
+#
+# class Parent2(object):
+#     def _init__(self):
+#         self.var2 = 2
+#
+# class Child(Parent1, Parent2):
+#     def __init__(self):
+#         Parent1.__init__(self)
+#         Parent2.__init__(self)
+#
+# if __name__ == '__main__':
+#     # a = Parent1()
+#     # b = Parent2()
+#
+#     c = Child()
+#
+#     print c.var2
 
-server = 'malibu.mysql.pythonanywhere-services.com'
-database = 'malibu$malibudb'
-username = 'malibu'
-password = 'testdbtestdb'
 
-
-app = Flask(__name__)
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'test'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
 
 if __name__ == '__main__':
 
-    '''
-        Attempt 1: Using mysql through flask
-    '''
-    # try:
-    #     conn = mysql.connect()
-    #     cursor =conn.cursor()
-    #
-    #     # Inserting data
-    #     cursor.execute('insert into comments (comment,user,time) values(%s,%s,%s)', ('This is a comment', 'BradlyPBD', 'TBD'))
-    #
-    #     conn.commit()
-    #
-    #
-    #     cursor.execute('SELECT id,comment,time,user from comments')
-    #
-    #     # cursor.execute("SELECT id from users where name = %s and password = %s", ())
-    #     data = cursor.fetchall()
-    #
-    #     print "Success"
-    # except Exception, e:
-    #     print e
-    # print data
-    #
-    # conn.close()
+    root = None
+
+    if not root:
+        print "Right"
 
 
-    '''
-        Attempt 2: Using MySQL solo pickup
-    '''
-    try:
-        import MySQLdb
-        conn = MySQLdb.connect(
-            host='malibu.mysql.pythonanywhere-services.com',
-            user='<malibu>',
-            passwd='<testdbtestdb>',
-            db='<malibu>$<malibudb>',
-            ssl={})
-        print conn.ping()
+    root_1 = None
 
-        cursor = conn.cursor()
-        cursor.execute("SELECT comment,user,time from comments order by id desc")
-        data = cursor.fetchall()
+    if root_1 is not None:
+        print "Wrong"
 
-        # cursor.execute("SELECT comment,user,time from comments order by id desc")
 
-        print data
-    except Exception, e:
-        print e
+(('kljljljlj', 'admin', '2016-11-14 00:17:03'), ('kjhkhkhkh', 'admin', '2016-11-14 00:15:50'), ('jhjh', 'admin', '2016-11-14 00:15:26'))
 
-    '''
-        Atempt 3: Using Pyodbc
-    '''
 
-    # try:
-    #     import pyodbc
-    #     db = pyodbc.connect("driver={MySQL}, server=server, port=3306, database=database, uid=username, password=password;")
-    #
-    # except Exception, e:
-    #     print ('Error Message:', e)

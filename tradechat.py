@@ -8,7 +8,7 @@ from flask.ext.mysql import MySQL
 #Configuration Parser Information
 cf = functions.configParser.ParseConfig()
 
-# session.permanent = True
+session.permanent = False
 
 #the application object from the main Flask class
 app = Flask(__name__)
@@ -160,7 +160,7 @@ def logout():
 #Adding a comment
 
 if __name__ == '__main__':
-    # init_db() # comment out if data in currect
+    init_db() # comment out if data in currect
               # TC database if to be kept
 
     app.run()
